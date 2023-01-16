@@ -347,6 +347,7 @@ setup(
         Extension(
             "sabyenc3",
             ["src/sabyenc3.cc"],
+            include_dirs=["src/crcutil-1.0/code", "src/crcutil-1.0/examples"],
         )
     ],
     cmdclass={"build_ext": SAByEncBuild},

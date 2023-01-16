@@ -160,6 +160,22 @@ template<typename CrcImplementation, typename RollingCrcImplementation>
              crcA_hi);
   }
 
+  virtual void Multiply(UINT64 crcA_lo,
+                        /* INOUT */ UINT64* crcB_lo = NULL) const {
+    SetValue(crc_.Base().Multiply(GetValue(crcA_lo, 0),
+                                  GetValue(crcB_lo, 0)),
+             crcB_lo,
+             NULL);
+  }
+
+  virtual void ZeroUnpad(UINT64 bytes,
+                         /* INOUT */ UINT64 *lo) const {
+    SetValue(crc_.Base().Multiply(GetValue(lo, NULL) ^ crc_.Base().Canonize(),
+                                  crc_.Base().Xpow8N(bytes ^ 0xFFFFFFFF)) ^ crc_.Base().Canonize(),
+             lo,
+             NULL);
+  }
+
   virtual size_t StoreComplementaryCrc(
       void *dst,
       UINT64 message_crc_lo, UINT64 message_crc_hi,

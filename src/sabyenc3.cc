@@ -27,7 +27,10 @@
 #include "yencode/decoder.h"
 #include "yencode/crc.h"
 
+#include "crcutil-1.0/examples/interface.h"
+
 /* Declarations */
+extern crcutil_interface::CRC *crc;
 
 /* Function and exception declarations */
 PyMODINIT_FUNC PyInit_sabyenc3(void);
@@ -67,6 +70,18 @@ static PyMethodDef sabyenc3_methods[] = {
         crc32_combine,
         METH_VARARGS,
         "crc32_combine(crc1, crc2, length)"
+    },
+    {
+        "crc32_multiply",
+        crc32_multiply,
+        METH_VARARGS,
+        "crc32_multiply(crc1, crc2)"
+    },
+    {
+        "crc32_zero_unpad",
+        crc32_zero_unpad,
+        METH_VARARGS,
+        "crc32_zero_unpad(crc1, length)"
     },
     {NULL, NULL, 0, NULL}
 };
@@ -793,4 +808,37 @@ PyObject* crc32_combine(PyObject *self, PyObject *args) {
     }
 
     return PyLong_FromUnsignedLong(do_crc32_combine(crc1, crc2, length));
+}
+
+inline uint32_t do_crc32_multiply(uint32_t crc1, uint32_t crc2) {
+    crcutil_interface::UINT64 crc1_ = crc1, crc2_ = crc2;
+    crc->Multiply(crc2_, &crc1_);
+    return (uint32_t) crc1_;
+}
+
+PyObject* crc32_multiply(PyObject *self, PyObject *args) {
+    uint32_t crc1, crc2;
+
+    if(!PyArg_ParseTuple(args, "II:crc32_multiply", &crc1, &crc2)) {
+        return NULL;
+    }
+
+    return PyLong_FromUnsignedLong(do_crc32_multiply(crc1, crc2));
+}
+
+inline uint32_t do_crc32_zero_unpad(uint32_t crc1, size_t len) {
+    crcutil_interface::UINT64 crc_ = crc1;
+    crc->ZeroUnpad(len, &crc_);
+    return (uint32_t) crc_;
+}
+
+PyObject* crc32_zero_unpad(PyObject *self, PyObject *args) {
+    uint32_t crc1;
+    size_t length;
+
+    if(!PyArg_ParseTuple(args, "In:crc32_zero_unpad", &crc1, &length)) {
+        return NULL;
+    }
+
+    return PyLong_FromUnsignedLong(do_crc32_zero_unpad(crc1, length));
 }

@@ -51,4 +51,6 @@ PyObject* decode_usenet_chunks(PyObject *, PyObject*);
 PyObject* decode_buffer(PyObject *, PyObject*);
 PyObject* encode(PyObject *, PyObject*);
 PyObject* crc32_combine(PyObject *, PyObject*);
+PyObject* crc32_multiply(PyObject *, PyObject*);
+PyObject* crc32_zero_unpad(PyObject *, PyObject*);
 PyMODINIT_FUNC PyInit_sabyenc3(void);
